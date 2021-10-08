@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
 const {
     getUserById,
     createNewUserWithId,
     updateUserWithMaze,
     deleteUserById,
-  } = require("./stateDB.js"),
+  } = require('./stateDB.js'),
   {
     handleNotAValidSolution,
     handleNoValidMaze,
@@ -15,24 +15,30 @@ const {
     handleMazeSelection,
     handleQuit,
     handleSolutionResponse,
-  } = require("./response.js"),
+  } = require('./response.js'),
   {
     generateMaze,
     isSolutionValid,
     destructureSolution,
     checkSolution,
-  } = require("./algorithm.js"),
-  express = require("express"),
-  bodyParser = require("body-parser"),
+  } = require('./algorithm.js'),
+  express = require('express'),
+  bodyParser = require('body-parser'),
   app = express().use(bodyParser.json());
+require('dotenv').config();
 
-app.listen(process.env.PORT || 3000, () =>
-  console.log(`webhook is listening on port:${process.env.PORT || "3000"}`)
-);
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`webhook is listening on port:${process.env.PORT || '3000'}`);
+  console.log(
+    process.env.verification_token,
+    process.env.access_key_id,
+    process.env.secret_key_id,
+  );
+});
 
-app.post("/webhook", (req, res) => {
+app.post('/webhook', (req, res) => {
   let body = req.body;
-  if (body.object === "page") {
+  if (body.object === 'page') {
     let userID, userMessage, userPostback;
     body.entry.forEach((entry) => {
       let webhook_event = entry.messaging[0];
@@ -70,25 +76,25 @@ app.post("/webhook", (req, res) => {
           // check if message is "quit", "new maze", "solution"
           // if none of those, ask if you want to restart again. => send the postback message start again
           if (
-            userMessage.text.toLowerCase() === "quit" ||
+            userMessage.text.toLowerCase() === 'quit' ||
             (userMessage.quick_reply !== undefined &&
-              userMessage.quick_reply.payload.toLowerCase() === "quit")
+              userMessage.quick_reply.payload.toLowerCase() === 'quit')
           ) {
             // deletes the session in db
             deleteUserById(userID);
             return handleQuit(userID, userMessage, userInfo);
           } else if (
-            userMessage.text.toLowerCase() === "maze" ||
+            userMessage.text.toLowerCase() === 'maze' ||
             (userMessage.quick_reply !== undefined &&
-              userMessage.quick_reply.payload.toLowerCase() === "maze")
+              userMessage.quick_reply.payload.toLowerCase() === 'maze')
           ) {
             return handleMazeSelection(userID, userMessage);
             // } else if (userMessage.text.toLowerCase() === "solution" && userInfo.maze.length) {
             //     return console.log("bot shows the solution to the code")
           } else if (
-            userMessage.text.toLowerCase() === "tutorial" ||
+            userMessage.text.toLowerCase() === 'tutorial' ||
             (userMessage.quick_reply !== undefined &&
-              userMessage.quick_reply.payload.toLowerCase() === "tutorial")
+              userMessage.quick_reply.payload.toLowerCase() === 'tutorial')
           ) {
             return sendTutorial(userID, userMessage);
           } else if (
@@ -97,21 +103,21 @@ app.post("/webhook", (req, res) => {
             const maze = userInfo.maze,
               start = userInfo.start,
               end = userInfo.end;
-            const solution = userMessage.text.toLowerCase().split(",");
+            const solution = userMessage.text.toLowerCase().split(',');
             const destructuredSolution = destructureSolution(solution);
             console.log(destructuredSolution);
             const response = checkSolution(
               maze,
               start,
               end,
-              destructuredSolution
+              destructuredSolution,
             );
             console.log(response);
             return handleSolutionResponse(
               userID,
               userMessage,
               userInfo,
-              response
+              response,
             );
           } else if (userInfo.maze.length === 0) {
             return handleNoValidMaze(userID);
@@ -129,27 +135,27 @@ app.post("/webhook", (req, res) => {
         console.log(error);
       });
 
-    res.status(200).send("EVENT_RECEIVED");
+    res.status(200).send('EVENT_RECEIVED');
   } else {
     res.sendStatus(404);
   }
 });
 
-app.get("/webhook", (req, res) => {
+app.get('/webhook', (req, res) => {
   // Your verify token. Should be a random string.
   let VERIFY_TOKEN = process.env.verification_token;
 
   // Parse the query params
-  let mode = req.query["hub.mode"];
-  let token = req.query["hub.verify_token"];
-  let challenge = req.query["hub.challenge"];
+  let mode = req.query['hub.mode'];
+  let token = req.query['hub.verify_token'];
+  let challenge = req.query['hub.challenge'];
 
   // Checks if a token and mode is in the query string of the request
   if (mode && token) {
     // Checks the mode and token sent is correct
-    if (mode === "subscribe" && token === VERIFY_TOKEN) {
+    if (mode === 'subscribe' && token === VERIFY_TOKEN) {
       // Responds with the challenge token from the request
-      console.log("WEBHOOK_VERIFIED");
+      console.log('WEBHOOK_VERIFIED');
       res.status(200).send(challenge);
     } else {
       // Responds with '403 Forbidden' if verify tokens do not match
