@@ -1,26 +1,28 @@
-const request = require("request");
+const request = require('request');
+require('dotenv').config();
+console.log(process.env.page_access_token);
 
 const responsePostback = {
   attachment: {
-    type: "template",
+    type: 'template',
     payload: {
-      template_type: "button",
-      text: "Lựa chọn mê cung:",
+      template_type: 'button',
+      text: 'Lựa chọn mê cung:',
       buttons: [
         {
-          type: "postback",
-          title: "Kích thước 5x11",
-          payload: "easy",
+          type: 'postback',
+          title: 'Kích thước 5x11',
+          payload: 'easy',
         },
         {
-          type: "postback",
-          title: "Kích thước 7x11",
-          payload: "medium",
+          type: 'postback',
+          title: 'Kích thước 7x11',
+          payload: 'medium',
         },
         {
-          type: "postback",
-          title: "Kích thước 9x11",
-          payload: "hard",
+          type: 'postback',
+          title: 'Kích thước 9x11',
+          payload: 'hard',
         },
       ],
     },
@@ -28,22 +30,22 @@ const responsePostback = {
 };
 
 const responseQuickReply = {
-  text: "Lựa chọn:",
+  text: 'Lựa chọn:',
   quick_replies: [
     {
-      content_type: "text",
-      title: "Chơi",
-      payload: "maze",
+      content_type: 'text',
+      title: 'Chơi',
+      payload: 'maze',
     },
     {
-      content_type: "text",
-      title: "Thoát",
-      payload: "quit",
+      content_type: 'text',
+      title: 'Thoát',
+      payload: 'quit',
     },
     {
-      content_type: "text",
-      title: "Hướng dẫn",
-      payload: "tutorial",
+      content_type: 'text',
+      title: 'Hướng dẫn',
+      payload: 'tutorial',
     },
   ],
 };
@@ -82,7 +84,7 @@ const sendTutorial = (sender_psid) => {
     })
     .then(() => {
       return callSendAPI(sender_psid, {
-        text: "Mục tiêu là để thằng cu 🏃 này ăn phở🍜. Nếu syntax lỗi, bot sẽ cảnh báo cho bạn. Nếu code của bạn đâm vào tường hoặc không kết thúc tại vị trí bát phở, bot sẽ show hình ảnh đường đi hiện tại cho bạn.\n**Luật chơi**:\n- Mỗi thao tác cách nhau bởi dấu phẩy.\n- Một lần di chuyển (u,l,r,d), hoặc một lần dùng vòng lặp loop(<số bước>-<hướng>) được tính như 1 thao tác.\n- Đoạn code không được đâm vào tường.\n- Đoạn code phải không được đi ra ngoài vùng chơi.",
+        text: 'Mục tiêu là để thằng cu 🏃 này ăn phở🍜. Nếu syntax lỗi, bot sẽ cảnh báo cho bạn. Nếu code của bạn đâm vào tường hoặc không kết thúc tại vị trí bát phở, bot sẽ show hình ảnh đường đi hiện tại cho bạn.\n*Luật chơi*:\n- Mỗi thao tác cách nhau bởi dấu phẩy.\n- Một lần di chuyển (u,l,r,d), hoặc một lần dùng vòng lặp loop(<số bước>-<hướng>) được tính như 1 thao tác.\n- Đoạn code không được đâm vào tường.\n- Đoạn code phải không được đi ra ngoài vùng chơi.\n *Lưu ý*: Nếu bạn đang dùng điện thoại Android hoặc chơi trên trình duyệt thì hãy chọn mê cung 5x11 để tránh trường hợp mê cung bị lỗi nhé :))',
       });
     })
     .then(() => {
@@ -123,20 +125,20 @@ const handleNoValidMaze = (sender_psid) => {
 // when the user quits
 const handleQuit = (sender_psid, received_message, userInfo) => {
   callSendAPI(sender_psid, {
-    text: "Cảm ơn bạn đã thử trò chơi! Hẹn gặp lại sau nhá!",
+    text: 'Cảm ơn bạn đã thử trò chơi! Hẹn gặp lại sau nhá!',
   });
 };
 
 // Handles messaging_postbacks events
 const handlePostback = (sender_psid, received_postback, userInfo) => {
   let responseMsg;
-  const wallNode = "⬛";
-  const openNode = "⬜";
-  const start = "🏃";
-  const end = "🍜";
+  const wallNode = '⬛';
+  const openNode = '⬜';
+  const start = '🏃';
+  const end = '🍜';
   const maze = userInfo.maze;
 
-  let mazeString = "";
+  let mazeString = '';
 
   for (let i = 1; i < maze.length - 1; i++) {
     for (let j = 1; j < maze[i].length - 1; j++) {
@@ -152,7 +154,7 @@ const handlePostback = (sender_psid, received_postback, userInfo) => {
         }
       }
     }
-    mazeString += "\n";
+    mazeString += '\n';
   }
 
   responseMsg = {
@@ -178,33 +180,33 @@ handleSolutionResponse = (
   sender_psid,
   received_message,
   userInfo,
-  solutionResponse
+  solutionResponse,
 ) => {
   let responseMsg, explanationMsg, pathTaken;
-  const wallNode = "⬛";
-  const openNode = "⬜";
-  const path = "🟩";
-  const pathEnd = "❌";
-  const start = "🏃";
-  const end = "🍜";
+  const wallNode = '⬛';
+  const openNode = '⬜';
+  const path = '🟩';
+  const pathEnd = '❌';
+  const start = '🏃';
+  const end = '🍜';
   const maze = userInfo.maze;
 
   if (solutionResponse.success !== undefined) {
-    explanationMsg = "Cách giải đúng! Siêu đó";
+    explanationMsg = 'Cách giải đúng! Siêu đó';
     pathTaken = solutionResponse.success;
   } else if (solutionResponse.failure !== undefined) {
     explanationMsg =
-      "Đường đi của bạn bị đập vào tường hoặc tràn ra ngoài rồi :))";
+      'Đường đi của bạn bị đập vào tường hoặc tràn ra ngoài rồi :))';
     pathTaken = solutionResponse.failure;
   } else if (solutionResponse.incomplete !== undefined) {
-    explanationMsg = "Đường đi của bạn chưa đến được điểm cuối!";
+    explanationMsg = 'Đường đi của bạn chưa đến được điểm cuối!';
     pathTaken = solutionResponse.incomplete;
   } else {
-    explanationMsg = "Code của bạn bị lỗi gì rồi :<";
+    explanationMsg = 'Code của bạn bị lỗi gì rồi :<';
     pathTaken = solutionResponse.failure;
   }
 
-  let mazeString = "";
+  let mazeString = '';
   let lastValidPosition = pathTaken[pathTaken.length - 1];
   const paths = new Set(pathTaken.map((element) => JSON.stringify(element)));
 
@@ -230,7 +232,7 @@ handleSolutionResponse = (
         }
       }
     }
-    mazeString += "\n";
+    mazeString += '\n';
   }
 
   responseMsg = {
@@ -257,7 +259,7 @@ handleSolutionResponse = (
 
 handleMazeSelection = (sender_psid, received_postback, userInfo) => {
   callSendAPI(sender_psid, responsePostback).catch((error) =>
-    console.log(error)
+    console.log(error),
   );
 };
 
@@ -270,23 +272,25 @@ const callSendAPI = (sender_psid, response) => {
     message: response,
   };
 
+  console.log(request_body);
+
   return new Promise((resolve, reject) => {
     request(
       {
-        uri: "https://graph.facebook.com/v2.6/me/messages",
+        uri: 'https://graph.facebook.com/v12.0/me/messages',
         qs: { access_token: process.env.page_access_token },
-        method: "POST",
+        method: 'POST',
         json: request_body,
       },
       (err, res, body) => {
         if (!err) {
-          console.log("message sent!");
-          resolve("success");
+          console.log('message sent!');
+          resolve('success');
         } else {
-          console.error("Unable to send message:" + err);
+          console.error('Unable to send message:' + err);
           reject(err);
         }
-      }
+      },
     );
   });
 };
